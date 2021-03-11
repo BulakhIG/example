@@ -1,0 +1,76 @@
+package ui.page;
+
+import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
+
+import java.util.Calendar;
+import java.util.Date;
+
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
+
+public class loginForm extends basePage {
+
+	public static SelenideElement firstHeader = $("h2");
+	public static SelenideElement secondHeader = $("h4");
+	public static SelenideElement loginForm = $("#loginForm");
+	public static SelenideElement userText = $("label[for=Username]");
+	public static SelenideElement userInput = $("#Username");
+	public static SelenideElement passText = $("label[for=Password]");
+	public static SelenideElement passInput = $("#Password");
+	public static SelenideElement logInButton = $("button.btn");
+	public static SelenideElement registerLink = $("a[href='/Account/Register']");
+	public static SelenideElement forgotPassLink = $("a[href='/Account/ForgotPassword']");
+	public static SelenideElement userNameErrorText = $("#Username-error");
+	public static SelenideElement incorrectLoginText = $("li");
+
+	@Step("Open Login form")
+	public static void openLoginForm() {
+		open("/Account/Login?ReturnUrl=/");
+		loginForm.shouldBe(visible);
+	}
+
+	@Step("Wait for 'Log in' button to appear and click on it")
+	public static void loginClick() {
+		logInButton.shouldNotHave(attribute("disabled")).hover();
+		logInButton.click();
+	}
+
+	@Step("Set login and password")
+	public static void setLoginPass(String login, String pass) {
+		setLogin(login);
+		setPass(pass);
+	}
+
+	@Step("Set login")
+	public static void setLogin(String login) {
+		userInput.parent().click();
+		userInput.setValue(login);
+	}
+
+	@Step("Set password")
+	public static void setPass(String pass) {
+		passInput.parent().click();
+		passInput.setValue(pass);
+	}
+
+	@Step("Wait for 'Register' link to appear and click on it")
+	public static void registerClick() {
+		registerLink.shouldNotHave(attribute("disabled")).hover();
+		registerLink.click();
+	}
+
+	@Step("Wait for 'Forgot password' link to appear and click on it")
+	public static void forgotPassClick() {
+		forgotPassLink.shouldNotHave(attribute("disabled")).hover();
+		forgotPassLink.click();
+	}
+
+	public static Date tomorrow() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_YEAR, 1);
+		return calendar.getTime();
+	}
+}
