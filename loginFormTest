@@ -1,0 +1,82 @@
+package ui.tests;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.TmsLink;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import ui.lib.baseUIClass;
+import ui.page.resetPassForm;
+
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.clearBrowserCookies;
+import static com.codeborne.selenide.Selenide.refresh;
+import static ui.page.loginForm.*;
+
+@Feature("Login form")
+public class loginFormTest extends baseUIClass {
+
+	@BeforeMethod(description = "Open Login form")
+	public void beforeMethod() {
+		openLoginForm();
+	}
+
+	@Test(description = "Validation Login form")
+	public void validationLoginFormTest() {
+		firstHeader.shouldBe(visible).shouldHave(exactText("Log in"));
+		secondHeader.shouldBe(visible).shouldHave(exactText("Use a local account to log in."));
+		userText.shouldBe(visible).shouldHave(exactText("Username"));
+		passText.shouldBe(visible).shouldHave(exactText("Password"));
+		logInButton.shouldBe(visible).shouldNotHave(attribute("disabled"));
+	}
+
+	@TmsLink("1")
+	@Test(description = "Login successful")
+	public void successfulLoginTest() {
+		setLoginPass(usernameDefault, passwordDefault);
+		loginClick();
+		block.shouldBe(appear);
+		block.shouldNotBe(attribute("style", "overlay block-overlay show"));
+		menu.shouldBe(appear);
+	}
+
+	@TmsLink("2")
+	@Test(description = "Incorrect password")
+	public void incorrectPassTest() {
+		setLoginPass(usernameDefault, "wrong");
+		loginClick();
+		block.shouldNotBe(appear);
+		incorrectLoginText.shouldBe(visible).shouldHave(exactText("Invalid login attempt"));
+	}
+
+	@TmsLink("3")
+	@Test(description = "Incorrect email")
+	public void incorrectEmailTest() {
+		setLogin("User_testing_stg");
+		loginClick();
+		block.shouldNotBe(appear);
+		userNameErrorText.shouldBe(visible).shouldHave(exactText("Please enter a valid e-mail address."));
+	}
+
+	@TmsLink("4")
+	@Test(description = "Open Register form")
+	public void openRegisterFormTest() {
+		registerClick();
+		firstHeader.shouldBe(visible).shouldHave(exactText("Register"));
+	}
+
+	@TmsLink("5")
+	@Test(description = "Open Forgot password form")
+	public void openForgotPassFormTest() {
+		forgotPassClick();
+		resetPassForm.firstHeader.shouldBe(visible).shouldHave(exactText("Reset password"));
+	}
+
+	@Test(description = "Authorization default user via cookies")
+	public void loginByCookiesTest() {
+		loginByCookies();
+		menu.shouldBe(appear);
+		clearBrowserCookies();
+		refresh();
+		menu.shouldBe(disappear);
+	}
+}
