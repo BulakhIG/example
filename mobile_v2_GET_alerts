@@ -1,0 +1,23 @@
+package api.test.mobile_v2.alerts;
+
+import api.lib.baseAPIClass;
+import org.testng.annotations.Test;
+
+import static api.endpoint.mobileApi.endpoint_alerts;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class mobile_v2_GET_alerts extends baseAPIClass {
+
+	@Test
+	public void GET_alerts() {
+		given().spec(hostMobileAllure).auth().oauth2(getAccessToken("User")).
+				when().get("/fields/58095" + endpoint_alerts).
+				then().statusCode(200).
+				body("Id[0]", notNullValue()).
+				body("Description[0]", equalTo("Alert_02 for testing")).
+				body("ValidFrom[0]", equalTo("2019-05-01T00:00:00")).
+				body("ValidUntil[0]", equalTo("2020-05-31T00:00:00")).
+				body("Type[0]", is(6));
+	}
+}
