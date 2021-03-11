@@ -1,0 +1,58 @@
+package api.test.backend_v1.fieldPerformanceIndexes;
+
+import api.lib.baseAPIClass;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static api.endpoint.backendApi.endpoint_fieldPerformanceIndexes;
+import static api.endpoint.mobileApi.endpoint_fields;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
+
+public class backend_v1_POST_fieldPerformanceIndexes extends baseAPIClass {
+
+	List<Object> RequestParams = new ArrayList<>();
+	Map<String, Object> fieldPerformanceIndexes = new HashMap<>();
+
+	@Test
+	public void POST_fieldPerformanceIndex() {
+		fieldPerformanceIndexes.put("FieldId", 77775);
+		fieldPerformanceIndexes.put("FieldPerformanceIndex", 49.313870089361743f);
+		RequestParams.add(fieldPerformanceIndexes);
+
+		given().spec(hostBackendAllure).auth().oauth2(getAccessToken("Backend")).
+				body(RequestParams).
+				when().post(endpoint_fieldPerformanceIndexes).
+				then().statusCode(200);
+	}
+
+	@Test(dependsOnMethods = "POST_fieldPerformanceIndex")
+	public void GET_fieldPerformanceIndex() {
+		given().spec(hostMobileAllure).auth().oauth2(getAccessToken("User")).
+				when().get(endpoint_fields + 77775).
+				then().statusCode(200).
+				body("Id", is(77775)).
+				body("FieldPerformanceIndex", is(49.313870089361743f));
+	}
+
+
+	@AfterClass
+	public void clearFieldPerformanceIndex() {
+		RequestParams.clear();
+		fieldPerformanceIndexes.clear();
+
+		fieldPerformanceIndexes.put("FieldId", 77775);
+		fieldPerformanceIndexes.put("FieldPerformanceIndex", null);
+		RequestParams.add(fieldPerformanceIndexes);
+
+		given().spec(hostBackendAllure).auth().oauth2(getAccessToken("Backend")).
+				body(RequestParams).
+				when().post(endpoint_fieldPerformanceIndexes).
+				then().statusCode(200);
+	}
+}
